@@ -7,18 +7,23 @@ import javax.sql.DataSource;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
 
+import br.com.naor.magiasdndapi.config.DbConfig;
+
 public class DbConnection {
 
 	private static MysqlDataSource dataSource;
+	
+	private static DbConfig dbConfig;
 
-	public static DataSource getDataSource() {
-		if (dataSource == null) {
+	private static DataSource getDataSource() {
+		if (dataSource == null && dbConfig == null) {
 			dataSource = new MysqlDataSource();
-			dataSource.setServerName("localhost");
-			dataSource.setPortNumber(3306);
-			dataSource.setDatabaseName("");
-			dataSource.setUser("");
-			dataSource.setPassword("");
+			dbConfig = new DbConfig();
+			dataSource.setServerName(dbConfig.getServerName());
+			dataSource.setPortNumber(dbConfig.getDbPortNumber());
+			dataSource.setDatabaseName(dbConfig.getDbName());
+			dataSource.setUser(dbConfig.getDbUser());
+			dataSource.setPassword(dbConfig.getDbPassword());
 
 		}
 

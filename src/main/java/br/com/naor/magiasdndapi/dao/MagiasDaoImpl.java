@@ -7,10 +7,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.sql.DataSource;
-
 import br.com.naor.magiasdndapi.dominio.Magia;
 import br.com.naor.magiasdndapi.enums.EscolasDeMagia;
+import br.com.naor.magiasdndapi.exceptions.DbException;
+import br.com.naor.magiasdndapi.exceptions.MagiaNotFoundException;
 
 public class MagiasDaoImpl implements MagiasDao {
 
@@ -24,17 +24,12 @@ public class MagiasDaoImpl implements MagiasDao {
 	private static final String COLUM_DURACAO = "duracao";
 	private static final String COLUM_NOME = "nome";
 	private static final String COLUM_DESCRICAO = "descricao";
-	private final DataSource dataSource;
-
-	public MagiasDaoImpl(DataSource dataSource) {
-		this.dataSource = dataSource;
-	}
 
 	@Override
 	public List<Magia> buscaTodasMagias() {
 		String sql = "SELECT * FROM magia";
 		List<Magia> magias = new ArrayList<>();
-		try (Connection connection = dataSource.getConnection();
+		try (Connection connection = DbConnection.getConnection();
 				PreparedStatement statement = connection.prepareStatement(sql)) {
 
 			try (ResultSet resultSet = statement.executeQuery()) {
@@ -56,7 +51,7 @@ public class MagiasDaoImpl implements MagiasDao {
 			}
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new DbException(e.getMessage(), e.getCause(), e.getSQLState(), e.getErrorCode());
 		}
 		return magias;
 	}
@@ -65,7 +60,7 @@ public class MagiasDaoImpl implements MagiasDao {
 	public Magia buscaMagiaPorNome(String nome) {
 		String sql = "SELECT magia.nome, magia.nivel, magia.ritual, magia.alcance, magia.componente_magia, magia.descricao, magia.duracao, magia.tempo_conjuracao, magia.escola_de_magia FROM magia WHERE magia.nome = ?";
 		Magia magia = null;
-		try (Connection connection = dataSource.getConnection();
+		try (Connection connection = DbConnection.getConnection();
 				PreparedStatement statement = connection.prepareStatement(sql)) {
 
 			statement.setString(1, nome);
@@ -77,13 +72,14 @@ public class MagiasDaoImpl implements MagiasDao {
 							resultSet.getString(COLUM_ALCANCE), resultSet.getString(COLUM_DESCRICAO),
 							resultSet.getString(COLUM_MAGIA_CLASSE),
 							EscolasDeMagia.valueOf(resultSet.getString(COLUM_ESCOLA_DE_MAGIA)));
+				} else {
+					throw new MagiaNotFoundException("Magia com nome" + nome + " nao foi encontrada");
 				}
 			}
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new DbException(e.getMessage(), e.getCause(), e.getSQLState(), e.getErrorCode());
 		}
-
 		return magia;
 	}
 
@@ -91,7 +87,7 @@ public class MagiasDaoImpl implements MagiasDao {
 	public Magia buscaMagiaPorId(Integer id) {
 		String sql = "SELECT magia.nome, magia.nivel, magia.ritual, magia.alcance, magia.componente_magia, magia.descricao, magia.duracao, magia.tempo_conjuracao, magia.escola_de_magia FROM magia WHERE magia.id = ?";
 		Magia magia = null;
-		try (Connection connection = dataSource.getConnection();
+		try (Connection connection = DbConnection.getConnection();
 				PreparedStatement statement = connection.prepareStatement(sql)) {
 
 			statement.setInt(1, id);
@@ -103,20 +99,22 @@ public class MagiasDaoImpl implements MagiasDao {
 							resultSet.getString(COLUM_ALCANCE), resultSet.getString(COLUM_DESCRICAO),
 							resultSet.getString(COLUM_MAGIA_CLASSE),
 							EscolasDeMagia.valueOf(resultSet.getString(COLUM_ESCOLA_DE_MAGIA)));
+				} else {
+					throw new MagiaNotFoundException("Magia com nome" + id + " nao foi encontrada");
 				}
 			}
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new DbException(e.getMessage(), e.getCause(), e.getSQLState(), e.getErrorCode());
 		}
 		return magia;
 	}
 
 	@Override
 	public List<Magia> buscaMagiasPorNivel(Integer nivel) {
-		String sql = "SELECT * FROM magia WHERE magia.nivel = ?";
+		String sql = "SELECT magia.nome, magia.nivel, magia.ritual, magia.alcance, magia.componente_magia, magia.descricao, magia.duracao, magia.tempo_conjuracao, magia.escola_de_magia FROM magia WHERE magia.nivel = ?";
 		List<Magia> magias = new ArrayList<>();
-		try (Connection connection = dataSource.getConnection();
+		try (Connection connection = DbConnection.getConnection();
 				PreparedStatement statement = connection.prepareStatement(sql)) {
 			statement.setInt(1, nivel);
 			try (ResultSet resultSet = statement.executeQuery()) {
@@ -135,10 +133,14 @@ public class MagiasDaoImpl implements MagiasDao {
 
 					magias.add(magia);
 				}
+
+				if (magias.isEmpty()) {
+					throw new MagiaNotFoundException("Magia com nivel" + nivel + " nao foram encontradas");
+				}
 			}
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new DbException(e.getMessage(), e.getCause(), e.getSQLState(), e.getErrorCode());
 		}
 		return magias;
 	}
