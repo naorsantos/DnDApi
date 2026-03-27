@@ -17,7 +17,7 @@ public class Magia {
 	private String nome;
 	private String tempoDeConjuracao;
 	private String componentes;
-	private boolean ritual = false;
+	private String ritual;
 	private String duracao;
 	private String alcance;
 	private String descricao;

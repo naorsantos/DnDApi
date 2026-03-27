@@ -41,7 +41,11 @@ public class MagiasDaoImpl implements MagiasDao {
 					magia.setComponentes(resultSet.getString(COLUM_COMPONENTE_MAGIA));
 					magia.setAlcance(resultSet.getString(COLUM_ALCANCE));
 					magia.setNivel(resultSet.getInt(COLUM_NIVEL));
-					magia.setRitual(resultSet.getBoolean(COLUM_RITUAL));
+					if (resultSet.getBoolean(COLUM_RITUAL)) {
+						magia.setRitual("SIM");
+					} else {
+						magia.setRitual("NÃO");
+					}
 					magia.setTempoDeConjuracao(resultSet.getString(COLUM_TEMPO_CONJURACAO));
 					magia.setClasses(resultSet.getString(COLUM_MAGIA_CLASSE));
 					magia.setEscolasDeMagia(EscolasDeMagia.valueOf(resultSet.getString(COLUM_ESCOLA_DE_MAGIA)));
@@ -66,12 +70,23 @@ public class MagiasDaoImpl implements MagiasDao {
 			statement.setString(1, nome);
 			try (ResultSet resultSet = statement.executeQuery()) {
 				if (resultSet.next()) {
-					magia = new Magia(null, resultSet.getInt(COLUM_NIVEL), resultSet.getString(COLUM_NOME),
-							resultSet.getString(COLUM_TEMPO_CONJURACAO), resultSet.getString(COLUM_COMPONENTE_MAGIA),
-							resultSet.getBoolean(COLUM_RITUAL), resultSet.getString(COLUM_DURACAO),
-							resultSet.getString(COLUM_ALCANCE), resultSet.getString(COLUM_DESCRICAO),
-							resultSet.getString(COLUM_MAGIA_CLASSE),
-							EscolasDeMagia.valueOf(resultSet.getString(COLUM_ESCOLA_DE_MAGIA)));
+					magia = new Magia();
+					magia.setNome(resultSet.getString(COLUM_NOME));
+					magia.setDescricao(resultSet.getString(COLUM_DESCRICAO));
+					magia.setDuracao(resultSet.getString(COLUM_DURACAO));
+					magia.setComponentes(resultSet.getString(COLUM_COMPONENTE_MAGIA));
+					magia.setAlcance(resultSet.getString(COLUM_ALCANCE));
+					magia.setNivel(resultSet.getInt(COLUM_NIVEL));
+					if (resultSet.getBoolean(COLUM_RITUAL)) {
+						magia.setRitual("SIM");
+					} else {
+						magia.setRitual("NÃO");
+					}
+
+					magia.setTempoDeConjuracao(resultSet.getString(COLUM_TEMPO_CONJURACAO));
+					magia.setClasses(resultSet.getString(COLUM_MAGIA_CLASSE));
+					magia.setEscolasDeMagia(EscolasDeMagia.valueOf(resultSet.getString(COLUM_ESCOLA_DE_MAGIA)));
+
 				} else {
 					throw new MagiaNotFoundException("Magia com nome" + nome + " nao foi encontrada");
 				}
@@ -93,12 +108,23 @@ public class MagiasDaoImpl implements MagiasDao {
 			statement.setInt(1, id);
 			try (ResultSet resultSet = statement.executeQuery()) {
 				if (resultSet.next()) {
-					magia = new Magia(null, resultSet.getInt(COLUM_NIVEL), resultSet.getString(COLUM_NOME),
-							resultSet.getString(COLUM_TEMPO_CONJURACAO), resultSet.getString(COLUM_COMPONENTE_MAGIA),
-							resultSet.getBoolean(COLUM_RITUAL), resultSet.getString(COLUM_DURACAO),
-							resultSet.getString(COLUM_ALCANCE), resultSet.getString(COLUM_DESCRICAO),
-							resultSet.getString(COLUM_MAGIA_CLASSE),
-							EscolasDeMagia.valueOf(resultSet.getString(COLUM_ESCOLA_DE_MAGIA)));
+					magia = new Magia();
+					magia.setNome(resultSet.getString(COLUM_NOME));
+					magia.setDescricao(resultSet.getString(COLUM_DESCRICAO));
+					magia.setDuracao(resultSet.getString(COLUM_DURACAO));
+					magia.setComponentes(resultSet.getString(COLUM_COMPONENTE_MAGIA));
+					magia.setAlcance(resultSet.getString(COLUM_ALCANCE));
+					magia.setNivel(resultSet.getInt(COLUM_NIVEL));
+					if (resultSet.getBoolean(COLUM_RITUAL)) {
+						magia.setRitual("SIM");
+					} else {
+						magia.setRitual("NÃO");
+					}
+
+					magia.setTempoDeConjuracao(resultSet.getString(COLUM_TEMPO_CONJURACAO));
+					magia.setClasses(resultSet.getString(COLUM_MAGIA_CLASSE));
+					magia.setEscolasDeMagia(EscolasDeMagia.valueOf(resultSet.getString(COLUM_ESCOLA_DE_MAGIA)));
+
 				} else {
 					throw new MagiaNotFoundException("Magia com nome" + id + " nao foi encontrada");
 				}
@@ -112,7 +138,7 @@ public class MagiasDaoImpl implements MagiasDao {
 
 	@Override
 	public List<Magia> buscaMagiasPorNivel(Integer nivel) {
-		String sql = "SELECT magia.nome, magia.nivel, magia.ritual, magia.alcance, magia.componente_magia, magia.descricao, magia.duracao, magia.tempo_conjuracao, magia.escola_de_magia FROM magia WHERE magia.nivel = ?";
+		String sql = "SELECT magia.nome, magia.nivel, magia.ritual, magia.alcance, magia.componente_magia, magia.descricao, magia.duracao, magia.tempo_conjuracao, magia.magia_classe, magia.escola_de_magia FROM magia WHERE magia.nivel = ?";
 		List<Magia> magias = new ArrayList<>();
 		try (Connection connection = DbConnection.getConnection();
 				PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -126,7 +152,12 @@ public class MagiasDaoImpl implements MagiasDao {
 					magia.setComponentes(resultSet.getString(COLUM_COMPONENTE_MAGIA));
 					magia.setAlcance(resultSet.getString(COLUM_ALCANCE));
 					magia.setNivel(resultSet.getInt(COLUM_NIVEL));
-					magia.setRitual(resultSet.getBoolean(COLUM_RITUAL));
+					if (resultSet.getBoolean(COLUM_RITUAL)) {
+						magia.setRitual("SIM");
+					} else {
+						magia.setRitual("NÃO");
+					}
+
 					magia.setTempoDeConjuracao(resultSet.getString(COLUM_TEMPO_CONJURACAO));
 					magia.setClasses(resultSet.getString(COLUM_MAGIA_CLASSE));
 					magia.setEscolasDeMagia(EscolasDeMagia.valueOf(resultSet.getString(COLUM_ESCOLA_DE_MAGIA)));
