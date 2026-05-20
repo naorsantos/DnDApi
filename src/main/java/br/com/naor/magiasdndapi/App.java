@@ -3,6 +3,9 @@ package br.com.naor.magiasdndapi;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sun.net.httpserver.HttpServer;
 
 import br.com.naor.magiasdndapi.controller.MagiaController;
@@ -14,8 +17,12 @@ import br.com.naor.magiasdndapi.service.MagiaService;
  * Magias D&D API
  */
 public class App {
+	
+	private static final Logger LOGGER  = LoggerFactory.getLogger(App.class);
 	public static void main(String[] args) throws IOException {
-
+		
+		LOGGER.info("inicializando aplicacao");
+		
 		MagiasDaoImpl magiasDaoImpl = new MagiasDaoImpl();
 		
 		MagiaService magiaService = new MagiaService(magiasDaoImpl);
@@ -27,6 +34,6 @@ public class App {
 		httpServer.setExecutor(null);
 		httpServer.start();
 
-		System.out.println("Servidor iniciado em http://localhost:8080/");
+		LOGGER.info("Servidor iniciado em http://localhost:8080/");
 	}
 }

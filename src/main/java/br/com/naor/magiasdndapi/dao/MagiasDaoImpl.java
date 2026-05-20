@@ -7,12 +7,19 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import br.com.naor.magiasdndapi.dominio.Magia;
 import br.com.naor.magiasdndapi.enums.EscolasDeMagia;
 import br.com.naor.magiasdndapi.exceptions.DbException;
 import br.com.naor.magiasdndapi.exceptions.MagiaNotFoundException;
 
 public class MagiasDaoImpl implements MagiasDao {
+	
+	private static final String ERRO_DE_BANCO_DE_DADOS = "ERRO DE BANCO DE DADOS";
+
+	private static final Logger LOGGER  = LoggerFactory.getLogger(MagiasDaoImpl.class);
 
 	private static final String COLUM_ESCOLA_DE_MAGIA = "escola_de_magia";
 	private static final String COLUM_MAGIA_CLASSE = "magia_classe";
@@ -27,6 +34,7 @@ public class MagiasDaoImpl implements MagiasDao {
 
 	@Override
 	public List<Magia> buscaTodasMagias() {
+		LOGGER.info("BUSCANDO TODAS AS MAGIAS DO BANCO");
 		String sql = "SELECT * FROM magia";
 		List<Magia> magias = new ArrayList<>();
 		try (Connection connection = DbConnection.getConnection();
@@ -55,6 +63,7 @@ public class MagiasDaoImpl implements MagiasDao {
 			}
 
 		} catch (SQLException e) {
+			LOGGER.error(ERRO_DE_BANCO_DE_DADOS);
 			throw new DbException(e.getMessage(), e.getCause(), e.getSQLState(), e.getErrorCode());
 		}
 		return magias;
@@ -66,7 +75,7 @@ public class MagiasDaoImpl implements MagiasDao {
 		Magia magia = null;
 		try (Connection connection = DbConnection.getConnection();
 				PreparedStatement statement = connection.prepareStatement(sql)) {
-
+			LOGGER.info("BUSCANDO MAGIA {} NO BANCO", nome);
 			statement.setString(1, nome);
 			try (ResultSet resultSet = statement.executeQuery()) {
 				if (resultSet.next()) {
@@ -93,6 +102,7 @@ public class MagiasDaoImpl implements MagiasDao {
 			}
 
 		} catch (SQLException e) {
+			LOGGER.error(ERRO_DE_BANCO_DE_DADOS);
 			throw new DbException(e.getMessage(), e.getCause(), e.getSQLState(), e.getErrorCode());
 		}
 		return magia;
@@ -104,7 +114,7 @@ public class MagiasDaoImpl implements MagiasDao {
 		Magia magia = null;
 		try (Connection connection = DbConnection.getConnection();
 				PreparedStatement statement = connection.prepareStatement(sql)) {
-
+			LOGGER.info("BUSCANDO MAGIA DE ID {} NO BANCO", id);
 			statement.setInt(1, id);
 			try (ResultSet resultSet = statement.executeQuery()) {
 				if (resultSet.next()) {
@@ -131,6 +141,7 @@ public class MagiasDaoImpl implements MagiasDao {
 			}
 
 		} catch (SQLException e) {
+			LOGGER.error(ERRO_DE_BANCO_DE_DADOS);
 			throw new DbException(e.getMessage(), e.getCause(), e.getSQLState(), e.getErrorCode());
 		}
 		return magia;
@@ -142,6 +153,7 @@ public class MagiasDaoImpl implements MagiasDao {
 		List<Magia> magias = new ArrayList<>();
 		try (Connection connection = DbConnection.getConnection();
 				PreparedStatement statement = connection.prepareStatement(sql)) {
+			LOGGER.info("BUSCANDO MAGIA DE NIVEL {} NO BANCO", nivel);
 			statement.setInt(1, nivel);
 			try (ResultSet resultSet = statement.executeQuery()) {
 				while (resultSet.next()) {
@@ -171,6 +183,7 @@ public class MagiasDaoImpl implements MagiasDao {
 			}
 
 		} catch (SQLException e) {
+			LOGGER.error(ERRO_DE_BANCO_DE_DADOS);
 			throw new DbException(e.getMessage(), e.getCause(), e.getSQLState(), e.getErrorCode());
 		}
 		return magias;

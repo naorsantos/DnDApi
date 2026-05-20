@@ -1,0 +1,37 @@
+version: '3.8'
+services:
+  # Serviço do Banco de Dados
+  db:
+    image: mysql:8.0
+    container_name: mysql_container
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: # aqui um usuario root para o mysql
+      MYSQL_DATABASE: # aqui vc instancia sua database
+      MYSQL_USER: # defina um usuario comum do mysql aqui
+      MYSQL_PASSWORD: # defina seu password do mysql aqui
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./init-scripts:/docker-entrypoint-initdb.d
+      - db_data:/var/lib/mysql
+    networks:
+      - minha_rede
+
+  # Serviço da API Java
+  app:
+    build: .
+    container_name: magias_dnd_service # defina um nome para seu container
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    networks:
+      - minha_rede
+
+volumes:
+  db_data:
+
+networks:
+  minha_rede:
+    driver: bridge

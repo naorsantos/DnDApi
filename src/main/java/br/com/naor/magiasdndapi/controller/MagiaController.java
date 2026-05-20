@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 
@@ -13,6 +16,7 @@ import br.com.naor.magiasdndapi.service.MagiaService;
 
 public class MagiaController {
 
+	private static final Logger LOGGER  = LoggerFactory.getLogger(MagiaController.class);
 	private final Map<String, BiFunction<HttpExchange, String, RouteResult>> routes = new HashMap<>();
 	private final MagiaService magiaService;
 	private final Gson gson = new Gson();
@@ -55,6 +59,8 @@ public class MagiaController {
 		String method = exchange.getRequestMethod();
 		String path = exchange.getRequestURI().getPath();
 
+		
+		LOGGER.info("REQUEST RECEBIDA METHOD: {} PATH: {}", method, path);
 		String key;
 		if (path.startsWith("/magias/nome/")) {
 			key = method + ":/magias/nome";
@@ -70,9 +76,11 @@ public class MagiaController {
 			try {
 				return action.apply(exchange, path);
 			} catch (Exception e) {
+				LOGGER.error("ERRO INTERNO DA APLICACAO {}", e.getMessage(), e);
 				return new RouteResult(gson.toJson(new MagiasResponse("Erro interno: " + e.getMessage(), 500)), 500);
 			}
 		} else {
+			LOGGER.info("NAO FOI ENCONTRADO ROTA PARA O SEGUINTE PATH {}", path);
 			return new RouteResult(gson.toJson(new MagiasResponse("Rota não encontrada", 404)), 404);
 		}
 	}
